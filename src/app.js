@@ -17,6 +17,7 @@ const timerText = document.getElementById("timer");
 const bestScoreText = document.getElementById("best-score-text");
 const bestScoreResultText = document.getElementById("best-score-result-text");
 const newBestText = document.getElementById("new-best-text");
+const resetBestScoreMessage = document.getElementById("reset-best-score-message");
 
 function readBestScore() {
   try {
@@ -47,6 +48,22 @@ function updateBestScoreDisplay(score) {
   if (bestScoreResultText) {
     bestScoreResultText.textContent = bestText;
   }
+}
+
+function resetBestScore() {
+  if (!window.confirm("Are you sure you want to reset your best score?")) {
+    return;
+  }
+
+  try {
+    window.localStorage.removeItem(BEST_SCORE_KEY);
+  } catch {
+    resetBestScoreMessage.textContent = "Could not reset best score. Please try again.";
+    return;
+  }
+
+  updateBestScoreDisplay(null);
+  resetBestScoreMessage.textContent = "Best score reset.";
 }
 
 function stopTimer() {
@@ -175,4 +192,5 @@ updateBestScoreDisplay(readBestScore());
 
 document.getElementById("start-btn").addEventListener("click", startQuiz);
 document.getElementById("restart-btn").addEventListener("click", startQuiz);
+document.getElementById("reset-best-score-btn").addEventListener("click", resetBestScore);
 nextButton.addEventListener("click", nextQuestion);
