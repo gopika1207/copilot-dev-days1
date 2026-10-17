@@ -2,7 +2,7 @@
 // Run them with:  npm test
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { shuffle, isCorrect, calculatePercentage, getGrade } = require("../src/quiz.js");
+const { shuffle, isCorrect, calculatePercentage, getGrade, formatTimeLeft } = require("../src/quiz.js");
 
 test("isCorrect returns true for the right answer", () => {
   assert.equal(isCorrect({ answer: 2 }, 2), true);
@@ -29,4 +29,30 @@ test("shuffle keeps every item and does not change the original array", () => {
 
 test("getGrade gives an A for exactly 90%", () => {
   assert.equal(getGrade(90), "A");
+});
+
+test("getGrade gives a B for exactly 75%", () => {
+  assert.equal(getGrade(75), "B");
+});
+
+test("getGrade gives a C for exactly 50%", () => {
+  assert.equal(getGrade(50), "C");
+});
+
+test("formatTimeLeft formats positive seconds when given a normal value", () => {
+  assert.equal(formatTimeLeft(12), "⏱ 12s");
+});
+
+test("formatTimeLeft formats five seconds when at the warning threshold", () => {
+  assert.equal(formatTimeLeft(5), "⏱ 5s");
+});
+
+test("formatTimeLeft formats zero seconds when the countdown expires", () => {
+  assert.equal(formatTimeLeft(0), "⏱ 0s");
+});
+
+test("formatTimeLeft returns zero when given invalid values", () => {
+  for (const seconds of [null, -1, "12", NaN, Infinity, -Infinity]) {
+    assert.equal(formatTimeLeft(seconds), "⏱ 0s");
+  }
 });

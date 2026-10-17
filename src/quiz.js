@@ -34,13 +34,20 @@ function calculatePercentage(score, total) {
  * A = 90% or more, B = 75% or more, C = 50% or more.
  */
 function getGrade(percentage) {
-  if (percentage > 90) return "A";
-  if (percentage > 75) return "B";
-  if (percentage > 50) return "C";
+  if (percentage >= 90) return "A";
+  if (percentage >= 75) return "B";
+  if (percentage >= 50) return "C";
   return "Keep practicing";
+}
+
+function formatTimeLeft(seconds) {
+  if (typeof seconds !== "number" || !Number.isFinite(seconds) || seconds < 0) {
+    return "⏱ 0s";
+  }
+  return `⏱ ${seconds}s`;
 }
 
 // Lets Node.js tests load this file. Browsers ignore this block.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { shuffle, isCorrect, calculatePercentage, getGrade };
+  module.exports = { shuffle, isCorrect, calculatePercentage, getGrade, formatTimeLeft };
 }
