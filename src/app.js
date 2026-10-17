@@ -1,5 +1,6 @@
 // UI code: connects the quiz logic (quiz.js) to the page (index.html).
 
+const BEST_SCORE_KEY = "dev-days-best-score";
 const state = { questions: [], current: 0, score: 0, timerId: null, timeLeft: 15, answered: false };
 
 const startScreen = document.getElementById("start-screen");
@@ -13,6 +14,40 @@ const nextButton = document.getElementById("next-btn");
 const scoreText = document.getElementById("score-text");
 const gradeText = document.getElementById("grade-text");
 const timerText = document.getElementById("timer");
+const bestScoreText = document.getElementById("best-score-text");
+const bestScoreResultText = document.getElementById("best-score-result-text");
+const newBestText = document.getElementById("new-best-text");
+
+function readBestScore() {
+  try {
+    const storedValue = window.localStorage.getItem(BEST_SCORE_KEY);
+    if (storedValue === null) {
+      return null;
+    }
+    const parsedValue = Number(storedValue);
+    return Number.isFinite(parsedValue) ? parsedValue : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveBestScore(score) {
+  try {
+    window.localStorage.setItem(BEST_SCORE_KEY, String(score));
+  } catch {
+    // Ignore storage issues so the quiz still works.
+  }
+}
+
+function updateBestScoreDisplay(score) {
+  const bestText = score === null ? "Best score: —" : `Best score: ${score}%`;
+  if (bestScoreText) {
+    bestScoreText.textContent = bestText;
+  }
+  if (bestScoreResultText) {
+    bestScoreResultText.textContent = bestText;
+  }
+}
 
 function stopTimer() {
   if (state.timerId !== null) {
@@ -49,6 +84,7 @@ function startQuiz() {
   state.questions = shuffle(QUESTIONS);
   state.current = 0;
   state.score = 0;
+  updateBestScoreDisplay(readBestScore());
   showScreen(quizScreen);
   renderQuestion();
 }
@@ -117,10 +153,25 @@ function nextQuestion() {
 function showResults() {
   const total = state.questions.length;
   const percentage = calculatePercentage(state.score, total);
+  const currentBest = readBestScore();
+  const becameNewBest = isNewBestScore(percentage, currentBest);
+  if (becameNewBest) {
+    saveBestScore(percentage);
+  }
+
+  const savedBest = readBestScore();
   scoreText.textContent = `You scored ${state.score} out of ${total} (${percentage}%)`;
   gradeText.textContent = `Grade: ${getGrade(percentage)}`;
+  updateBestScoreDisplay(savedBest);
+
+  if (newBestText) {
+    newBestText.textContent = becameNewBest ? "🏆 New best score!" : "";
+  }
+
   showScreen(resultScreen);
 }
+
+updateBestScoreDisplay(readBestScore());
 
 document.getElementById("start-btn").addEventListener("click", startQuiz);
 document.getElementById("restart-btn").addEventListener("click", startQuiz);

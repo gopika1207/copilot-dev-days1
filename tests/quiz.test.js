@@ -2,7 +2,7 @@
 // Run them with:  npm test
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { shuffle, isCorrect, calculatePercentage, getGrade, formatTimeLeft } = require("../src/quiz.js");
+const { shuffle, isCorrect, calculatePercentage, getGrade, formatTimeLeft, isNewBestScore } = require("../src/quiz.js");
 
 test("isCorrect returns true for the right answer", () => {
   assert.equal(isCorrect({ answer: 2 }, 2), true);
@@ -55,4 +55,20 @@ test("formatTimeLeft returns zero when given invalid values", () => {
   for (const seconds of [null, -1, "12", NaN, Infinity, -Infinity]) {
     assert.equal(formatTimeLeft(seconds), "⏱ 0s");
   }
+});
+
+test("isNewBestScore returns true when the current score is the first best score", () => {
+  assert.equal(isNewBestScore(82, null), true);
+});
+
+test("isNewBestScore returns true only when the current score beats the previous best", () => {
+  assert.equal(isNewBestScore(91, 90), true);
+  assert.equal(isNewBestScore(90, 90), false);
+  assert.equal(isNewBestScore(89, 90), false);
+});
+
+test("isNewBestScore ignores invalid best values and returns a safe comparison", () => {
+  assert.equal(isNewBestScore(80, undefined), true);
+  assert.equal(isNewBestScore(80, "90"), true);
+  assert.equal(isNewBestScore(80, NaN), true);
 });

@@ -47,7 +47,20 @@ function formatTimeLeft(seconds) {
   return `⏱ ${seconds}s`;
 }
 
+function isNewBestScore(current, best) {
+  if (typeof current !== "number" || !Number.isFinite(current)) {
+    return false;
+  }
+  if (best === null || typeof best === "undefined") {
+    return true;
+  }
+  if (typeof best !== "number" || !Number.isFinite(best)) {
+    return true;
+  }
+  return current > best;
+}
+
 // Lets Node.js tests load this file. Browsers ignore this block.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { shuffle, isCorrect, calculatePercentage, getGrade, formatTimeLeft };
+  module.exports = { shuffle, isCorrect, calculatePercentage, getGrade, formatTimeLeft, isNewBestScore };
 }
